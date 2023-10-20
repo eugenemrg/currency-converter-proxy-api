@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Response, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import requests
 import os
@@ -6,6 +7,19 @@ import os
 app = FastAPI()
 
 APP_API_KEY = os.getenv('CONVERTER_API_KEY', None)
+
+"""
+Allow CORS for API requests
+
+Read more here: https://fastapi.tiangolo.com/tutorial/cors/
+"""
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get('/')
 async def index():
