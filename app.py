@@ -38,6 +38,22 @@ async def index():
                 detail='Server is unable to complete the request at the moment'
             )
 
+@app.get('/rates/{base_currency}')
+async def get_rates(base_currency):
+    if not APP_API_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail='Server encountered an error and could unfortunately not complete the request'
+        )
+    else:
+        r = requests.get(f'https://v6.exchangerate-api.com/v6/{APP_API_KEY}/latest/{base_currency}')
+        if r.status_code == 200:
+            return Response(r.content, status_code=200, media_type='application/json')
+        else:
+            raise HTTPException(
+                status_code=502,
+                detail='Server is unable to complete the request at the moment'
+            )
 
 @app.get('/convert/{base_currency}/{target_currency}/{amount}')
 async def convert(base_currency: str, target_currency: str, amount: float):
