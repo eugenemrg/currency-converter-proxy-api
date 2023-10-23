@@ -29,6 +29,7 @@ app.add_middleware(
 async def index():
     # Check if rates are cached and return cached values if possible
     conversion_rates = store.get('USD')
+    print(type(conversion_rates), conversion_rates)
     if conversion_rates:
         return Response(bytes(conversion_rates, 'utf-8'), status_code=200, media_type='application/json')
     
