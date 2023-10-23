@@ -1,12 +1,16 @@
 from fastapi import FastAPI, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import redis
 import requests
 import os
 
 app = FastAPI()
 
 APP_API_KEY = os.getenv('CONVERTER_API_KEY', None)
+
+REDIS_URL = os.getenv('REDIS_URL')
+r = redis.from_url(REDIS_URL)
 
 """
 Allow CORS for API requests
