@@ -72,5 +72,5 @@ async def convert(base_currency: str, target_currency: str, amount: float):
                 detail='Server is unable to complete the request at the moment'
             )
 
-if __name__ == '__main__':
-    uvicorn.run('app:app', port=5555, log_level='info', reload=True)
+# if __name__ == '__main__':
+#     uvicorn.run('app:app', port=5555, log_level='info', reload=True)
