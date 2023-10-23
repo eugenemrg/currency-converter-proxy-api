@@ -43,6 +43,7 @@ async def index():
             # Cache newly received rates
             store.set('USD', r.text)
             store.expire('USD', 43200)
+            log_api_call()
             
             return Response(r.content, status_code=200, media_type='application/json')
         else:
@@ -69,6 +70,7 @@ async def get_rates(base_currency):
             # Cache newly received rates
             store.set(base_currency, r.text)
             store.expire(base_currency, 43200)
+            log_api_call()
             
             return Response(r.content, status_code=200, media_type='application/json')
         else:
@@ -93,6 +95,15 @@ async def convert(base_currency: str, target_currency: str, amount: float):
                 status_code=502,
                 detail='Server is unable to complete the request at the moment'
             )
+
+def log_api_call():
+    count = store.get('count')
+    if not count:
+        store.set('count', 1)
+    else:
+        count = int(count) + 1
+        store.set('count', count)
+        print(f'Latest count is {count}')
 
 # if __name__ == '__main__':
 #     port = os.getenv('PORT', 10000)
