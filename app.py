@@ -10,7 +10,7 @@ app = FastAPI()
 APP_API_KEY = os.getenv('CONVERTER_API_KEY', None)
 
 REDIS_URL = os.getenv('REDIS_URL')
-r = redis.from_url(REDIS_URL)
+store = redis.from_url(REDIS_URL)
 
 """
 Allow CORS for API requests
