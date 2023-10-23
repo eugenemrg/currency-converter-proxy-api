@@ -29,9 +29,8 @@ app.add_middleware(
 async def index():
     # Check if rates are cached and return cached values if possible
     conversion_rates = store.get('USD')
-    print(type(conversion_rates), conversion_rates)
     if conversion_rates:
-        return Response(bytes(conversion_rates, 'utf-8'), status_code=200, media_type='application/json')
+        return Response(conversion_rates, status_code=200, media_type='application/json')
     
     if not APP_API_KEY:
         raise HTTPException(
@@ -57,7 +56,7 @@ async def get_rates(base_currency):
     # Check if rates are cached and return cached values if possible
     conversion_rates = store.get(base_currency)
     if conversion_rates:
-        return Response(bytes(conversion_rates, 'utf-8'), status_code=200, media_type='application/json')
+        return Response(conversion_rates, status_code=200, media_type='application/json')
         
     if not APP_API_KEY:
         raise HTTPException(
@@ -68,8 +67,8 @@ async def get_rates(base_currency):
         r = requests.get(f'https://v6.exchangerate-api.com/v6/{APP_API_KEY}/latest/{base_currency}')
         if r.status_code == 200:
             # Cache newly received rates
-            store.set('USD', r.text)
-            store.expire('USD', 43200)
+            store.set(base_currency, r.text)
+            store.expire(base_currency, 43200)
             
             return Response(r.content, status_code=200, media_type='application/json')
         else:
