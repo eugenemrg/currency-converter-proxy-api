@@ -27,6 +27,11 @@ app.add_middleware(
 
 @app.get('/')
 async def index():
+    # Check if rates are cached and return cached values if possible
+    conversion_rates = store.get('USD')
+    if conversion_rates:
+        return Response(bytes(conversion_rates, 'utf-8'), status_code=200, media_type='application/json')
+    
     if not APP_API_KEY:
         raise HTTPException(
             status_code=500,
@@ -35,6 +40,10 @@ async def index():
     else:
         r = requests.get(f'https://v6.exchangerate-api.com/v6/{APP_API_KEY}/latest/USD')
         if r.status_code == 200:
+            # Cache newly received rates
+            store.set('USD', r.text)
+            store.expire('USD', 43200)
+            
             return Response(r.content, status_code=200, media_type='application/json')
         else:
             raise HTTPException(
@@ -44,6 +53,11 @@ async def index():
 
 @app.get('/rates/{base_currency}')
 async def get_rates(base_currency):
+    # Check if rates are cached and return cached values if possible
+    conversion_rates = store.get(base_currency)
+    if conversion_rates:
+        return Response(bytes(conversion_rates, 'utf-8'), status_code=200, media_type='application/json')
+        
     if not APP_API_KEY:
         raise HTTPException(
             status_code=500,
@@ -52,6 +66,10 @@ async def get_rates(base_currency):
     else:
         r = requests.get(f'https://v6.exchangerate-api.com/v6/{APP_API_KEY}/latest/{base_currency}')
         if r.status_code == 200:
+            # Cache newly received rates
+            store.set('USD', r.text)
+            store.expire('USD', 43200)
+            
             return Response(r.content, status_code=200, media_type='application/json')
         else:
             raise HTTPException(
